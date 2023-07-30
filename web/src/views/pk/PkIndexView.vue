@@ -1,6 +1,5 @@
 <template>
   <PlayGround>
-    对战
   </PlayGround>
 </template>
 
@@ -8,11 +7,10 @@
 import PlayGround from '@/components/PlayGround.vue'
 export default {
   components: {
-    PlayGround
-  }
+    PlayGround,
+  },
 }
 </script>
 
 <style scoped>
-
 </style>

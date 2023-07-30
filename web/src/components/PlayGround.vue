@@ -17,7 +17,7 @@ export default {
 div.PlayGround{
   width: 60vw;
   height: 70vh;
-  background-color: #fff;
+  background-color: #f3c1d9;
   margin: 40px auto;
 }
 </style>
