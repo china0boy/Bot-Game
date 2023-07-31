@@ -1,6 +1,6 @@
 <template>
   <div ref="parent" class="GameMap">
-    <canvas ref="canvas" tabindex="0">
+    <canvas ref="canvas" tabindex="0" style="outline: none;">
 
     </canvas>
   </div>
