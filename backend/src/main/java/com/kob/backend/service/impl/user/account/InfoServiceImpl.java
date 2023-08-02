@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kob.backend.utils.UserUtil.getUser;
+
 @Service
 public class InfoServiceImpl implements InfoService {
     @Override
-    public Map<String,String> getInfo() throws Exception {
+    public Map<String, String> getInfo() throws Exception {
         Map<String, String> map = new HashMap<>();
         try {
-            UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            UserDetailsImpl longinUser = (UserDetailsImpl) token.getPrincipal();
-            User user = longinUser.getUser();
+            User user = getUser();
             map.put("message", "success");
             map.put("id", user.getId().toString());
             map.put("username", user.getUsername());

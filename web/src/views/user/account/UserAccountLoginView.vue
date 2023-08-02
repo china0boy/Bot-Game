@@ -91,7 +91,7 @@ button {
   color: #6777ef;
 }
 .a1 {
-  margin-top: 15%;
+  margin-top: 10%;
   width: 500px;
 }
 .a2 {
