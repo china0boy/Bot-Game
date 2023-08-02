@@ -11,26 +11,7 @@ export default {
   components: {
     NavVar,
   },
-  setup() {
-
-
-    // $.ajax({
-    //   url: 'http://127.0.0.1:8011/user/account/register/',
-    //   type: 'POST',
-    //   dataType: 'json',
-    //   data: {
-    //     username: '小3',
-    //     password: '123',
-    //     confirmedPassword: '123',
-    //   },
-    //   success: function (data) {
-    //     console.log(data)
-    //   },
-    //   error: function (xhr, status, error) {
-    //     console.log('Error: ' + error.message)
-    //   },
-    // })
-  },
+  setup() {},
 }
 </script>
 
