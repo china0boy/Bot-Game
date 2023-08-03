@@ -62,7 +62,7 @@ public class UpdateServiceImpl implements UpdateService {
         }
         Bot new_bot = new Bot(bot.getId(), user.getId(), title, description, content, bot.getRating(), bot.getCreatetime(), new Date());
         botMapper.updateById(new_bot);
-        map.put("message", "修改成功");
+        map.put("message", "success");
         return map;
     }
 }
