@@ -1,5 +1,5 @@
 <template>
-  <div class="PlayGround">
+  <div class="playground">
     <GameMap></GameMap>
   </div>
 </template>
@@ -14,7 +14,7 @@ export default {
 </script>
 
 <style scoped>
-div.PlayGround{
+div.playground{
   width: 60vw;
   height: 70vh;
   /* background-color: #f3c1d9; */
