@@ -1,27 +1,66 @@
 package com.kob.backend.consumer.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.pojo.Record;
+import lombok.SneakyThrows;
+
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Game {
-    final private Integer rows ;
-    final private Integer cols ;
-    final private Integer innerWallsCount ;
-    final private int[][] g;
+public class Game extends Thread {
+    private final Integer rows;
+    private final Integer cols;
+    private final Integer innerWallsCount;
+    private final int[][] g;
+    private final static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
+    private final Player playerA, playerB;
+    private Integer nextStepA = null;
+    private Integer nextStepB = null;
+    private ReentrantLock lock = new ReentrantLock();
+    private String status = "playing";   //playing finished
+    private String loser = "";  // all：平局   A：A输   B：B输
 
-    public Game(Integer rows, Integer cols, Integer innerWallsCount) {
+    public Game(Integer rows, Integer cols, Integer innerWallsCount, Integer playerAId, Integer playerBId) {
         this.rows = rows;
         this.cols = cols;
         this.innerWallsCount = innerWallsCount;
         this.g = new int[rows][cols];
+        this.playerA = new Player(playerAId, rows - 2, 1, new ArrayList<>());
+        this.playerB = new Player(playerBId, 1, cols - 2, new ArrayList<>());
     }
 
     public int[][] getG() {
         return g;
+    }
+
+    public Player getPlayerA() {
+        return playerA;
+    }
+
+    public Player getPlayerB() {
+        return playerB;
+    }
+
+    public void setNextStepA(Integer nextStepA) {
+        lock.lock();
+        try {
+            this.nextStepA = nextStepA;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setNextStepB(Integer nextStepB) {
+        lock.lock();
+        try {
+            this.nextStepB = nextStepB;
+        } finally {
+            lock.unlock();
+        }
     }
 
     private boolean draw() {
@@ -66,8 +105,7 @@ public class Game {
         if (sx == tx && sy == ty) return true;
         g[sx][sy] = 1;
 
-        int[] dx = {-1, 0, 1, 0};
-        int[] dy = {0, 1, 0, -1};
+
         for (int i = 0; i < 4; i++) {
             int x = sx + dx[i];
             int y = sy + dy[i];
@@ -79,173 +117,151 @@ public class Game {
         g[sx][sy] = 0;
         return false;
     }
-//
-//    private boolean creteWalls() {
-//        boolean[][] g = new boolean[rows][cols];
-//        for (int r = 0; r < rows; r++) {
-//            for (int c = 0; c < cols; c++) {
-//                g[r][c] = false;
-//            }
-//        }
-//
-//        for (int r = 0; r < rows; r++) {
-//            g[r][0] = g[r][cols - 1] = true;
-//        }
-//
-//        for (int c = 0; c < cols; c++) {
-//            g[0][c] = g[rows - 1][c] = true;
-//        }
-//
-//        Random random = new Random();
-//        for (int i = 0; i < innerWallsCount / 2; i++) {
-//            for (int j = 0; j < 10000; j++) {
-//                int r = random.nextInt(rows);
-//                int c = random.nextInt(cols);
-//                if (g[r][c] || g[rows - 1 - r][cols - 1 - c]) continue;
-//                if ((r == rows - 2 && c == 1) || (r == 1 && c == cols - 2)) continue;
-//                g[r][c] = g[rows - 1 - r][cols - 1 - c] = true;
-//                break;
-//            }
-//        }
-//
-//        g[rows - 2][1] = g[1][cols - 2] = false;
-//
-//        boolean[][] copyG = new boolean[rows][cols];
-//        for (int r = 0; r < rows; r++) {
-//            System.arraycopy(g[r], 0, copyG[r], 0, cols);
-//        }
-//
-//        if (!checkConnectivity(copyG, rows - 2, 1, 1, cols - 2)) {
-//            return false;
-//        }
-//
-//        for (int r = 0; r < rows; r++) {
-//            for (int c = 0; c < cols; c++) {
-//                if (g[r][c]) {
-//                    walls.add(new Wall(r, c, this));
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//    private void addListeningEvents() {
-//        ctx.canvas().requestFocus();
-//        Snake snake0 = snakes.get(0);
-//        Snake snake1 = snakes.get(1);
-//
-//        ctx.canvas().addKeyListener(new KeyListener() {
-//            @Override
-//            public void keyTyped(KeyEvent e) {
-//            }
-//
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                int key = e.getKeyCode();
-//                switch (key) {
-//                    case KeyEvent.VK_W:
-//                        snake0.setDirection(0);
-//                        break;
-//                    case KeyEvent.VK_D:
-//                        snake0.setDirection(1);
-//                        break;
-//                    case KeyEvent.VK_S:
-//                        snake0.setDirection(2);
-//                        break;
-//                    case KeyEvent.VK_A:
-//                        snake0.setDirection(3);
-//                        break;
-//                    case KeyEvent.VK_UP:
-//                        snake1.setDirection(0);
-//                        break;
-//                    case KeyEvent.VK_RIGHT:
-//                        snake1.setDirection(1);
-//                        break;
-//                    case KeyEvent.VK_DOWN:
-//                        snake1.setDirection(2);
-//                        break;
-//                    case KeyEvent.VK_LEFT:
-//                        snake1.setDirection(3);
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//            }
-//        });
-//    }
-//
-//    public void start() {
-//        for (int i = 0; i < 1000; i++) {
-//            if (creteWalls()) {
-//                break;
-//            }
-//        }
-//    }
-//
-//    private void updateSize() {
-//        L = Math.min(parent.clientWidth() / cols, parent.clientHeight() / rows);
-//        ctx.canvas().width(L * cols);
-//        ctx.canvas().height(L * rows);
-//    }
-//
-//    private boolean checkReady() {
-//        for (Snake snake : snakes) {
-//            if (!"idle".equals(snake.getStatus()) || snake.getDirection() == -1) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-//
-//    public void nextStep() {
-//        for (Snake snake : snakes) {
-//            snake.nextStep();
-//        }
-//    }
-//
-//    private boolean checkValid(Cell cell) {
-//        for (Wall wall : walls) {
-//            if (wall.getRow() == cell.r && wall.getCol() == cell.c) {
-//                return false;
-//            }
-//        }
-//        for (Snake snake : snakes) {
-//            int k = snake.getCells().size();
-//            if (!snake.checkTailIncreasing()) {
-//                k--;
-//            }
-//            for (int i = 0; i < k; i++) {
-//                if (snake.getCells().get(i).r == cell.r && snake.getCells().get(i).c == cell.c) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//    public void update() {
-//        updateSize();
-//        if (checkReady()) {
-//            nextStep();
-//        }
-//        render();
-//    }
-//
-//    private void render() {
-//        Color colorEven = new Color(170, 215, 82);
-//        Color colorOdd = new Color(162, 208, 72);
-//
-//        for (int r = 0; r < rows; r++) {
-//            for (int c = 0; c < cols; c++) {
-//                if ((r + c) % 2 == 0) {
-//                    ctx.fillStyle(colorEven);
-//                } else {
-//                    ctx.fillStyle(colorOdd);
-//                }
-//                ctx.fillRect(c * L, r * L, L, L);
-//            }
-//        }
-//    }
+
+    private boolean nextStep() {
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < 25; i++) {
+            try {
+                Thread.sleep(200);
+                lock.lock();
+                try {
+                    if (nextStepA != null && nextStepB != null) {
+                        playerA.getSteps().add(nextStepA);
+                        playerB.getSteps().add(nextStepB);
+                        return true;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private boolean checkValid(List<Cell> cellsA, List<Cell> cellsB) {
+        int n = cellsA.size();
+        Cell cell = cellsA.get(n - 1);
+        if (g[cell.x][cell.y] == 1) return false;
+        for (int i = 0; i < n - 1; i++) {
+            if (cellsA.get(i).x == cell.x && cellsA.get(i).y == cell.y) return false;
+        }
+        for (int i = 0; i < n - 1; i++) {
+            if (cellsB.get(i).x == cell.x && cellsB.get(i).y == cell.y) return false;
+        }
+        return true;
+    }
+
+    private void judge() {
+        List<Cell> snakeA = playerA.getCells();
+        List<Cell> snakeB = playerB.getCells();
+
+        boolean validA = checkValid(snakeA, snakeB);
+        boolean validB = checkValid(snakeB, snakeA);
+        if (!validA || !validB) {
+            status = "finished";
+            if (!validA && !validB) {
+                loser = "all";
+            } else if (!validA) {
+                loser = "A";
+            } else {
+                loser = "B";
+            }
+        }
+    }
+
+    @SneakyThrows
+    private void sendAllMessage(String message) {
+        WebSocketServer.users.get(playerA.getId()).sendMessage(message);
+        WebSocketServer.users.get(playerB.getId()).sendMessage(message);
+    }
+
+    private void sendMove() {
+        lock.lock();
+        try {
+            JSONObject resp = new JSONObject();
+            resp.put("type", "move");
+            resp.put("a_direction", nextStepA);
+            resp.put("b_direction", nextStepB);
+            nextStepA = nextStepB = null;
+            sendAllMessage(resp.toJSONString());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void sendResult() {
+        JSONObject resp = new JSONObject();
+        resp.put("type", "result");
+        resp.put("loser", loser);
+        saveToDatabase();
+        sendAllMessage(resp.toJSONString());
+    }
+
+    private String getMapString(){
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++){
+                res.append(g[i][j]);
+            }
+        }
+        return res.toString();
+    }
+
+    private void saveToDatabase() {
+        Record record = new Record(
+                null,
+                playerA.getId(),
+                playerA.getSx(),
+                playerA.getSy(),
+                playerB.getId(),
+                playerB.getSx(),
+                playerB.getSy(),
+                playerA.getStepsString(),
+                playerB.getStepsString(),
+                getMapString(),
+                loser,
+                new Date()
+        );
+
+        WebSocketServer.recordMapper.insert(record);
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < rows * cols / 2; i++) {
+            if (nextStep()) {
+                judge();
+                sendMove();
+                if (status.equals("playing")) {
+
+                } else {
+                    sendResult();
+                    break;
+                }
+            } else {
+                status = "finished";
+                lock.lock();
+                try {
+                    if (nextStepA == null && nextStepB == null) {
+                        loser = "all";
+                    } else if (nextStepA == null) {
+                        loser = "A";
+                    } else {
+                        loser = "B";
+                    }
+
+                } finally {
+                    lock.unlock();
+                }
+                sendResult();
+                break;
+            }
+        }
+    }
 }

@@ -39,16 +39,18 @@ export class GameMap extends AcGameObject {
   // 添加监听事件
   add_listening_events() {
     this.ctx.canvas.focus();
-    const [sanke0, snake1] = this.snakes;
     this.ctx.canvas.addEventListener("keydown", e => {
-      if (e.key === "w") sanke0.set_direction(0);
-      else if (e.key === "d") sanke0.set_direction(1);
-      else if (e.key === "s") sanke0.set_direction(2);
-      else if (e.key === "a") sanke0.set_direction(3);
-      else if (e.key === "ArrowUp") snake1.set_direction(0);
-      else if (e.key === "ArrowRight") snake1.set_direction(1);
-      else if (e.key === "ArrowDown") snake1.set_direction(2);
-      else if (e.key === "ArrowLeft") snake1.set_direction(3);
+      let d = -1
+      if (e.key === "w") d = 0
+      else if (e.key === "d") d = 1
+      else if (e.key === "s") d = 2
+      else if (e.key === "a") d = 3
+      if (d != -1) {
+        this.store.state.pk.socket.send(JSON.stringify({
+          type: "move",
+          direction: d,
+        }));
+      }
     });
   }
 
