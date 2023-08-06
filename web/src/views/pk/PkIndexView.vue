@@ -43,14 +43,14 @@ export default {
           setTimeout(() => {
             store.commit('updateStatus', 'playing')
           }, 200)
-        } else if (data.type === 'move') {
+        } else if (data.type === 'move' && store.state.pk.status === 'playing') {
           console.log(data)
           const game = store.state.pk.gameObject
           const [snake0, snake1] = game.snakes
 
           snake0.set_direction(data.a_direction)
           snake1.set_direction(data.b_direction)
-        } else if (data.type === 'result') {
+        } else if (data.type === 'result' && store.state.pk.status === 'playing') {
           console.log(data)
           setTimeout(() => {
             const game = store.state.pk.gameObject
