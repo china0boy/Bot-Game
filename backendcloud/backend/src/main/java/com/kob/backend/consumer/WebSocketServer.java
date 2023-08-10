@@ -3,8 +3,10 @@ package com.kob.backend.consumer;
 import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.utils.Game;
 import com.kob.backend.consumer.utils.JwtAuthentication;
+import com.kob.backend.mapper.BotMapper;
 import com.kob.backend.mapper.RecordMapper;
 import com.kob.backend.mapper.UserMapper;
+import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
 import com.kob.backend.pojo.User;
 import lombok.SneakyThrows;
@@ -32,7 +34,8 @@ public class WebSocketServer {
 
     private static UserMapper userMapper;
     public static RecordMapper recordMapper;
-    private static RestTemplate restTemplate;
+    private static BotMapper botMapper;
+    public static RestTemplate restTemplate;
 
     private Game game = null;
     private final static String addPlayerUrl = "http://127.0.0.1:8012/player/add/";
@@ -46,6 +49,11 @@ public class WebSocketServer {
     @Autowired
     public void setRecordMapper(RecordMapper recordMapper) {
         WebSocketServer.recordMapper = recordMapper;
+    }
+
+    @Autowired
+    public void setBotMapper(BotMapper botMapper) {
+        WebSocketServer.botMapper = botMapper;
     }
 
     @Autowired
@@ -80,14 +88,23 @@ public class WebSocketServer {
     }
 
     @SneakyThrows
-    public static void starGame(Integer aId, Integer bId) {
+    public static void starGame(Integer aId, Integer aBotId, Integer bId, Integer bBotId) {
         User user1 = userMapper.selectById(aId), user2 = userMapper.selectById(bId);
-        Game game = new Game(13, 14, 20, user1.getId(), user2.getId());
+        Bot bot1 = botMapper.selectById(aBotId), bot2 = botMapper.selectById(bBotId);
+
+        Game game = new Game(
+                13,
+                14,
+                20,
+                user1.getId(),
+                bot1,
+                user2.getId(),
+                bot2);
         game.createMap();
-        if(users.get(user1.getId()) != null) {
+        if (users.get(user1.getId()) != null) {
             users.get(user1.getId()).game = game;
         }
-        if(users.get(user2.getId()) != null) {
+        if (users.get(user2.getId()) != null) {
             users.get(user2.getId()).game = game;
         }
         game.start();
@@ -106,7 +123,7 @@ public class WebSocketServer {
         respUser1.put("opponent_username", user2.getUsername());
         respUser1.put("opponent_photo", user2.getPhoto());
         respUser1.put("game", respGame);
-        if(users.get(user1.getId()) != null) {
+        if (users.get(user1.getId()) != null) {
             users.get(user1.getId()).sendMessage(respUser1.toJSONString());
         }
 
@@ -115,17 +132,18 @@ public class WebSocketServer {
         respUser2.put("opponent_username", user1.getUsername());
         respUser2.put("opponent_photo", user1.getPhoto());
         respUser2.put("game", respGame);
-        if(users.get(user2.getId()) != null) {
+        if (users.get(user2.getId()) != null) {
             users.get(user2.getId()).sendMessage(respUser2.toJSONString());
         }
     }
 
     @SneakyThrows
-    private void startMatch() {
+    private void startMatch(Integer botId) {
         System.out.println("开始匹配");
         MultiValueMap<String, Object> data = new LinkedMultiValueMap<>();
         data.add("userId", user.getId().toString());
         data.add("rating", user.getRating().toString());
+        data.add("botId", botId.toString());
         System.out.println(restTemplate.postForObject(addPlayerUrl, data, String.class));
     }
 
@@ -138,9 +156,11 @@ public class WebSocketServer {
 
     private void move(int direction) {
         if (game.getPlayerA().getId().equals(user.getId())) {
-            game.setNextStepA(direction);
+            if (game.getPlayerA().getBotId().equals(-1))
+                game.setNextStepA(direction);
         } else if (game.getPlayerB().getId().equals(user.getId())) {
-            game.setNextStepB(direction);
+            if (game.getPlayerB().getBotId().equals(-1))
+                game.setNextStepB(direction);
         } else {
             System.out.println("用户不在游戏中");
         }
@@ -152,7 +172,7 @@ public class WebSocketServer {
         JSONObject data = JSONObject.parseObject(message);
         String type = data.getString("type");
         if ("match".equals(type)) {
-            startMatch();
+            startMatch(data.getInteger("bot_id"));
         } else if ("cancel_match".equals(type)) {
             cancelMatch();
         } else if ("move".equals(type)) {
