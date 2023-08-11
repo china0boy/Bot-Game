@@ -160,7 +160,7 @@ public class Game extends Thread {
     private void sendBotCode(Player player) {
         if(player.getBotId().equals(-1)) return;
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
-        data.add("user_id", player.getBotId().toString());
+        data.add("user_id", player.getId().toString());
         data.add("bot_code", player.getBotCode());
         data.add("input", getInput(player));
         WebSocketServer.restTemplate.postForObject(addBotUrl, data, String.class);

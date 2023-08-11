@@ -243,7 +243,7 @@ export default {
             Modal.getInstance(document.querySelector('#remove-bot-modal-' + bot.id)).hide()
             refresh_bots()
           } else {
-            console.log(reqs.message)
+            // console.log(reqs.message)
           }
         },
         error() {

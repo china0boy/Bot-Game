@@ -1,10 +1,11 @@
 package com.botrunningsystem.service.impl;
 
+import com.botrunningsystem.service.BotRunningService;
 import com.botrunningsystem.service.impl.utils.BotPool;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BotRunningService implements com.botrunningsystem.service.BotRunningService {
+public class BotRunningServiceImpl implements BotRunningService {
     public static final BotPool botPool = new BotPool();
 
     @Override

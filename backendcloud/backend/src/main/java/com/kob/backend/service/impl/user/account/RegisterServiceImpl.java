@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.User;
 import com.kob.backend.service.user.account.RegisterService;
+import com.kob.backend.service.user.bot.AddService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import java.util.Map;
 public class RegisterServiceImpl implements RegisterService {
     @Autowired
     UserMapper userMapper;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -71,6 +71,7 @@ public class RegisterServiceImpl implements RegisterService {
             map.put("message", "注册成功");
             return map;
         } catch (Exception e) {
+            e.printStackTrace();
             map.put("status", "error");
             map.put("message", "注册失败");
             return map;

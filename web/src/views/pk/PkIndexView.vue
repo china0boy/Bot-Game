@@ -20,7 +20,7 @@ export default {
     const store = useStore()
     const socketUrl = `ws://127.0.0.1:8011/websocket/${store.state.user.token}/`
     let socket = null
-
+    store.commit('updateLoser', 'none')
     onMounted(() => {
       store.commit('updateOpponent', {
         username: '???',
@@ -28,7 +28,7 @@ export default {
       })
       socket = new WebSocket(socketUrl)
       socket.onopen = function () {
-        console.log('websocket connected')
+        // console.log('websocket connected')
         store.commit('updateSocket', socket)
       }
       socket.onmessage = function (msg) {
@@ -44,14 +44,14 @@ export default {
             store.commit('updateStatus', 'playing')
           }, 200)
         } else if (data.type === 'move' && store.state.pk.status === 'playing') {
-          console.log(data)
+          // console.log(data)
           const game = store.state.pk.gameObject
           const [snake0, snake1] = game.snakes
 
           snake0.set_direction(data.a_direction)
           snake1.set_direction(data.b_direction)
         } else if (data.type === 'result' && store.state.pk.status === 'playing') {
-          console.log(data)
+          // console.log(data)
           setTimeout(() => {
             const game = store.state.pk.gameObject
             const [snake0, snake1] = game.snakes
