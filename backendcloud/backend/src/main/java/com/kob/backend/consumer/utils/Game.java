@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
+import com.kob.backend.pojo.User;
 import lombok.SneakyThrows;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -139,12 +140,12 @@ public class Game extends Thread {
         return false;
     }
 
-    private String getInput(Player player){// 地图#1.x#1.y#1.操作#2.x#2.y#2.操作
-        Player me,you;
-        if(player.getId().equals(playerA.getId())){
+    private String getInput(Player player) {// 地图#1.x#1.y#1.操作#2.x#2.y#2.操作
+        Player me, you;
+        if (player.getId().equals(playerA.getId())) {
             me = playerA;
             you = playerB;
-        }else{
+        } else {
             me = playerB;
             you = playerA;
         }
@@ -158,7 +159,7 @@ public class Game extends Thread {
     }
 
     private void sendBotCode(Player player) {
-        if(player.getBotId().equals(-1)) return;
+        if (player.getBotId().equals(-1)) return;
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", player.getId().toString());
         data.add("bot_code", player.getBotCode());
@@ -269,7 +270,29 @@ public class Game extends Thread {
         return res.toString();
     }
 
+    private void updateUserRating(Player player, Integer rating) {
+        User user = WebSocketServer.userMapper.selectById(player.getId());
+        user.setRating(rating);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
     private void saveToDatabase() {
+        Integer ratingA = WebSocketServer.userMapper.selectById(playerA.getId()).getRating();
+        Integer ratingB = WebSocketServer.userMapper.selectById(playerB.getId()).getRating();
+
+        if ("all".equals(loser)) {
+            ratingA -= 1;
+            ratingB -= 1;
+        } else if ("A".equals(loser)) {
+            ratingA -= 3;
+            ratingB += 5;
+        } else {
+            ratingA += 5;
+            ratingB -= 3;
+        }
+        updateUserRating(playerA, ratingA);
+        updateUserRating(playerB, ratingB);
+
         Record record = new Record(
                 null,
                 playerA.getId(),
@@ -284,7 +307,6 @@ public class Game extends Thread {
                 loser,
                 new Date()
         );
-
         WebSocketServer.recordMapper.insert(record);
     }
 

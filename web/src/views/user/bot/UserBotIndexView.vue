@@ -7,6 +7,25 @@
             <img :src="$store.state.user.photo" alt="" style="width:100%;" />
           </div>
         </div>
+        <button type="button" class="btn btn-outline-primary" style="width: 100%;margin-top:1vh" data-bs-toggle="modal" data-bs-target="#update-photo">修改头像</button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="update-photo">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">上传头像</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <input v-model="photo" type="text" class="form-control" id="add-bot-title" placeholder="请上传头像的网址">
+              <div class="modal-footer">
+                <button @click="update_photo()" type="button" class="btn btn-danger">上传</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">取消</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="col-9">
         <div class="card" style="margin-top:20px">
@@ -34,7 +53,7 @@
                     </div>
                     <div class="mb-3">
                       <label for="add-bot-code" class="form-label">代码</label>
-                      <VAceEditor v-model:value="botadd.content" @init="editorInit" lang="c_cpp" theme="textmate" style="height: 300px" :options="{
+                      <VAceEditor v-model:value="botadd.content" lang="c_cpp" theme="textmate" style="height: 300px" :options="{
                                                     enableBasicAutocompletion: true, //启用基本自动完成
                                                     enableSnippets: true, // 启用代码段
                                                     enableLiveAutocompletion: true, // 启用实时自动完成
@@ -96,7 +115,7 @@
                             </div>
                             <div class="mb-3">
                               <label for="add-bot-code" class="form-label">代码</label>
-                              <VAceEditor v-model:value="bot.content" @init="editorInit" lang="c_cpp" theme="textmate" style="height: 300px" :options="{
+                              <VAceEditor v-model:value="bot.content" lang="c_cpp" theme="textmate" style="height: 300px" :options="{
                                                                     enableBasicAutocompletion: true, //启用基本自动完成
                                                                     enableSnippets: true, // 启用代码段
                                                                     enableLiveAutocompletion: true, // 启用实时自动完成
@@ -135,6 +154,7 @@
                         </div>
                       </div>
                     </div>
+
                   </td>
                 </tr>
               </tbody>
@@ -168,6 +188,7 @@ export default {
 
     const store = useStore()
     let bots = ref([])
+    let photo = ref('')
 
     let botadd = reactive({
       title: '',
@@ -281,12 +302,39 @@ export default {
       })
     }
 
+    const update_photo = () => {
+      $.ajax({
+        url: 'http://127.0.0.1:8011/user/account/updatePhoto/',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          photo: photo.value,
+        },
+        headers: {
+          Authorization: 'Bearer ' + store.state.user.token,
+        },
+        success(reqs) {
+          if (reqs.status === 'success') {
+            // 刷新页面
+            window.location.reload()
+          } else {
+            console.log(reqs.message)
+          }
+        },
+        error() {
+          console.log('网络超时，请稍后再试')
+        },
+      })
+    }
+
     return {
       bots,
       botadd,
       add_bot,
       remove_bot,
       update_bot,
+      update_photo,
+      photo,
     }
   },
 }

@@ -38,20 +38,46 @@ export class GameMap extends AcGameObject {
 
   // 添加监听事件
   add_listening_events() {
-    this.ctx.canvas.focus();
-    this.ctx.canvas.addEventListener("keydown", e => {
-      let d = -1
-      if (e.key === "w") d = 0
-      else if (e.key === "d") d = 1
-      else if (e.key === "s") d = 2
-      else if (e.key === "a") d = 3
-      if (d != -1) {
-        this.store.state.pk.socket.send(JSON.stringify({
-          type: "move",
-          direction: d,
-        }));
-      }
-    });
+    if (this.store.state.record.is_record) {
+      console.log(this.store.state.record)
+      let k = 0
+      const a_steps = this.store.state.record.a_steps;
+      const b_steps = this.store.state.record.b_steps;
+      const loser = this.store.state.record.record_loser;
+      const [snake0, snake1] = this.snakes;
+      const interval_id = setInterval(() => {
+        if (k >= a_steps.length ) {
+          if (loser === 'all' || loser === 'A') {
+            snake0.status = 'die'
+          }
+          if (loser === 'all' || loser === 'B') {
+            snake1.status = 'die'
+          }
+          clearInterval(interval_id);
+        }
+        else {
+          snake0.set_direction(parseInt(a_steps[k]));
+          snake1.set_direction(parseInt(b_steps[k]));
+        }
+        k++;
+      }, 210);
+    } else {
+      this.ctx.canvas.focus();
+      this.ctx.canvas.addEventListener("keydown", e => {
+        let d = -1
+        if (e.key === "w") d = 0
+        else if (e.key === "d") d = 1
+        else if (e.key === "s") d = 2
+        else if (e.key === "a") d = 3
+        if (d != -1) {
+          this.store.state.pk.socket.send(JSON.stringify({
+            type: "move",
+            direction: d,
+          }));
+        }
+      });
+    }
+
   }
 
   start() {

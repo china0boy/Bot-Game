@@ -20,7 +20,10 @@ export default {
     const store = useStore()
     const socketUrl = `ws://127.0.0.1:8011/websocket/${store.state.user.token}/`
     let socket = null
+
     store.commit('updateLoser', 'none')
+    store.commit('updateIsRecord', false)
+
     onMounted(() => {
       store.commit('updateOpponent', {
         username: '???',
