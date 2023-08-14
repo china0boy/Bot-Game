@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import router from '@/router'
 
 export default {
   state: {
@@ -31,7 +32,7 @@ export default {
   actions: {
     login(context, data) {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/account/token/',
+        url:  'https://app5784.acapp.acwing.com.cn/api/user/account/token/',
         type: 'POST',
         dataType: 'json',
         data: {
@@ -54,7 +55,7 @@ export default {
     },
     getinfo(context, data) {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/account/info/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/account/info/',
         type: 'GET',
         headers: {
           Authorization: 'Bearer ' + context.state.token,
@@ -69,6 +70,8 @@ export default {
         },
         error(resp) {
           data.error(resp)
+          localStorage.removeItem('jwt_token')
+          router.push({ name: 'user_account_login' });
         },
       })
     },

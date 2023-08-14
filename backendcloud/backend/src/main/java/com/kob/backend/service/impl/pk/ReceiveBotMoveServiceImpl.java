@@ -11,7 +11,7 @@ public class ReceiveBotMoveServiceImpl implements ReceiveBotMoveService {
     public String receiveBotMove(Integer userId, Integer direction) {
         if(WebSocketServer.users.get(userId) != null){
             Game game= WebSocketServer.users.get(userId).game;
-            System.out.println("userId: " + userId + " direction: " + direction+" game: "+game);
+//            System.out.println("userId: " + userId + " direction: " + direction+" game: "+game);
             if(game!=null){
                 if(game.getPlayerA().getId().equals(userId)){
                     game.setNextStepA(direction);

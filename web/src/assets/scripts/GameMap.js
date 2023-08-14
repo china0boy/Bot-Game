@@ -39,7 +39,7 @@ export class GameMap extends AcGameObject {
   // 添加监听事件
   add_listening_events() {
     if (this.store.state.record.is_record) {
-      console.log(this.store.state.record)
+      // console.log(this.store.state.record)
       let k = 0
       const a_steps = this.store.state.record.a_steps;
       const b_steps = this.store.state.record.b_steps;

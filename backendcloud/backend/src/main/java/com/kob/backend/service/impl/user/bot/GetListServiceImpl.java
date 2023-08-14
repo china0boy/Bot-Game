@@ -42,10 +42,15 @@ public class GetListServiceImpl implements GetListService {
         data.put("title", "默认bot");
         data.put("description", "这是一个教程bot");
         data.put("content", "package com.botrunningsystem.utils;\n" +
+                "import java.io.File;\n" +
+                "import java.io.FileNotFoundException;\n" +
                 "import java.util.ArrayList;\n" +
                 "import java.util.List;\n" +
+                "import java.util.Scanner;\n" +
+                "import java.util.function.Supplier;\n" +
                 "\n" +
-                "public class Bot implements BotInterface {\n" +
+                "public class Bot implements Supplier<Integer> {\n" +
+                "\n" +
                 "    static class Cell {\n" +
                 "        Integer x, y;\n" +
                 "\n" +
@@ -79,7 +84,6 @@ public class GetListServiceImpl implements GetListService {
                 "        return res;\n" +
                 "    }\n" +
                 "\n" +
-                "    @Override\n" +
                 "    public Integer nextMove(String input) {\n" +
                 "        String[] strs = input.split(\"#\");\n" +
                 "        int[][] g = new int[13][14];//解析地图 1是障碍物 0是空地\n" +
@@ -108,6 +112,17 @@ public class GetListServiceImpl implements GetListService {
                 "        }\n" +
                 "\n" +
                 "        return 0;\n" +
+                "    }\n" +
+                "\n" +
+                "    @Override\n" +
+                "    public Integer get() {\n" +
+                "        File file = new File(\"input.txt\");\n" +
+                "        try {\n" +
+                "            Scanner sc=new Scanner(file);\n" +
+                "            return nextMove(sc.next());\n" +
+                "        } catch (FileNotFoundException e) {\n" +
+                "            throw new RuntimeException(e);\n" +
+                "        }\n" +
                 "    }\n" +
                 "}\n");
         addService.add(data);

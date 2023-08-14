@@ -21,11 +21,11 @@ export default {
 
     if (store.state.record.is_record === false) {
       if (store.state.pk.a_id == store.state.user.id) {
-        store.state.pk.red_username = store.state.pk.opponent_username
-        store.state.pk.blue_username = store.state.user.username
-      } else {
         store.state.pk.red_username = store.state.user.username
         store.state.pk.blue_username = store.state.pk.opponent_username
+      } else {
+                store.state.pk.red_username = store.state.pk.opponent_username
+        store.state.pk.blue_username = store.state.user.username
       }
     }
 

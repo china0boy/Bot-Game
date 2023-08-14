@@ -66,7 +66,7 @@ export default {
 
     const refresh_bots = () => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/bot/getlist/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/bot/getlist/',
         type: 'GET',
         dataType: 'json',
         headers: {

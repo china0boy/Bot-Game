@@ -40,6 +40,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             Claims claims = JwtUtil.parseJWT(token);
             userid = claims.getSubject();
         } catch (Exception e) {
+            filterChain.doFilter(request, response);
             throw new RuntimeException(e);
         }
 

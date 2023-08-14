@@ -30,7 +30,7 @@ const routes = [
     path: '/record/',
     name: 'record_index',
     component: RecordIndexView,
-    meta: {
+    meta: { 
       requestAuth: true
     }
   },
@@ -102,6 +102,8 @@ router.beforeEach((to, from, next) => {
       },
       error() {
         // alert("token无效，请重新登录！");
+        // 延迟0.5s
+        store.commit("updateToken", "");
         router.push({ name: 'user_account_login' });
       }
     })

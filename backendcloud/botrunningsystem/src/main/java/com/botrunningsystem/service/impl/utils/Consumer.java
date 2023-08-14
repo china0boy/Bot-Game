@@ -1,6 +1,5 @@
 package com.botrunningsystem.service.impl.utils;
 
-import com.botrunningsystem.utils.BotInterface;
 import org.joor.Reflect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,7 +7,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Component
 public class Consumer extends Thread {
@@ -38,7 +41,7 @@ public class Consumer extends Thread {
         StringBuilder result = new StringBuilder();
         for (String line : lines) {
             if (line.contains("public class Bot")) {
-                result.append("public class Bot").append(uid).append(" implements BotInterface{\n");
+                result.append("public class Bot").append(uid).append(" implements Supplier<Integer>{\n");
             } else {
                 result.append(line).append("\n");
             }
@@ -50,12 +53,21 @@ public class Consumer extends Thread {
     public void run() {
         UUID uuid = UUID.randomUUID();
         String uid = uuid.toString().substring(0, 8);
-        BotInterface botInterface = Reflect.compile(
+
+        Supplier<Integer> botInterface = Reflect.compile(
                 "com.botrunningsystem.utils.Bot" + uid,
                 addUid(bot.getBotCode(), uid)
         ).create().get();
-        Integer move = botInterface.nextMove(bot.getInput());
-        System.out.println("id:" + bot.getUserId() + " move:" + move);
+
+        File file = new File("input.txt");
+        try (PrintWriter fout= new PrintWriter(file)) {
+            fout.println(bot.getInput());
+            fout.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Integer move = botInterface.get();
+//        System.out.println("id:" + bot.getUserId() + " move:" + move);
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("userId", bot.getUserId().toString());
         data.add("direction", move.toString());

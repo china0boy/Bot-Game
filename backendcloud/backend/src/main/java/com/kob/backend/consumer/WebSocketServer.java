@@ -168,7 +168,7 @@ public class WebSocketServer {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("接收到消息: " + message);
+//        System.out.println("接收到消息: " + message);
         JSONObject data = JSONObject.parseObject(message);
         String type = data.getString("type");
         if ("match".equals(type)) {

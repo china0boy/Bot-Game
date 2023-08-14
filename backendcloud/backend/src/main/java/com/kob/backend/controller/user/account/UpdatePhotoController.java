@@ -13,7 +13,7 @@ public class UpdatePhotoController {
     @Autowired
     private UpdatePhotoService updatePhotoService;
 
-    @PostMapping("/user/account/updatePhoto/")
+    @PostMapping("/api/user/account/updatePhoto/")
     public Map<String, String> updatePhoto(@RequestParam Map<String, String> data){
         String photo = data.get("photo");
         return updatePhotoService.updatePhoto(photo);

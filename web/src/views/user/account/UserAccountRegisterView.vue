@@ -48,7 +48,7 @@ export default {
 
     const register = () => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/account/register/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/account/register/',
         type: 'POST',
         dataType: 'json',
         data: {

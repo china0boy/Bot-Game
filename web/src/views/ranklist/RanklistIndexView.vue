@@ -75,7 +75,7 @@ export default {
     const pull_page = (currentPpage, pageSize) => {
       current_page = currentPpage
       $.ajax({
-        url: 'http://127.0.0.1:8011/ranklist/getlist/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/ranklist/getlist/',
         type: 'GET',
         data: {
           page: currentPpage,

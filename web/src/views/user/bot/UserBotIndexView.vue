@@ -198,7 +198,7 @@ export default {
     })
     const refresh_bots = () => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/bot/getlist/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/bot/getlist/',
         type: 'GET',
         dataType: 'json',
         headers: {
@@ -218,7 +218,7 @@ export default {
 
     const add_bot = () => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/bot/add/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/bot/add/',
         type: 'POST',
         dataType: 'json',
         data: {
@@ -250,7 +250,7 @@ export default {
 
     const remove_bot = (bot) => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/bot/remove/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/bot/remove/',
         type: 'POST',
         dataType: 'json',
         data: {
@@ -275,7 +275,7 @@ export default {
 
     const update_bot = (bot) => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/bot/update/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/bot/update/',
         type: 'POST',
         dataType: 'json',
         data: {
@@ -304,7 +304,7 @@ export default {
 
     const update_photo = () => {
       $.ajax({
-        url: 'http://127.0.0.1:8011/user/account/updatePhoto/',
+        url: 'https://app5784.acapp.acwing.com.cn/api/user/account/updatePhoto/',
         type: 'POST',
         dataType: 'json',
         data: {
