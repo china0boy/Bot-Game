@@ -1,5 +1,0 @@
-scp	传文件
-scp -r	传文件夹
-
-mv -f dist/* .	移动
-rm -r	删除
